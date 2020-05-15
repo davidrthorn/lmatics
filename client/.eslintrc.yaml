@@ -1,0 +1,17 @@
+env:
+  browser: true
+  es6: true
+extends:
+  - plugin:react/recommended
+  - eslint:recommended
+  - standard
+parserOptions:
+  ecmaFeatures:
+    jsx: true
+  ecmaVersion: 2018
+  sourceType: module
+plugins:
+  - react
+  - sort-imports-es6-autofix
+rules:
+  sort-imports-es6-autofix/sort-imports-es6: 2
