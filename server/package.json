@@ -1,6 +1,8 @@
 {
   "version": "1.0.0",
-  "name": "server"
+  "name": "server",
+  "author": "David Rowthorn",
+  "license": "ISC"
 }
 
 

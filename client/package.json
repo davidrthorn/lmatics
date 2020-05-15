@@ -1,11 +1,13 @@
 {
   "version": "1.0.0",
+  "author": "David Rowthorn",
+  "license": "ISC",
   "name": "client",
   "dependencies": {
     "jest": "^26.0.1",
+    "prop-types": "^15.7.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "prop-types": "^15.7.2",
     "recharts": "^1.8.5"
   },
   "devDependencies": {
@@ -14,7 +16,10 @@
     "eslint": "^7.0.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-config-standard-react": "^9.2.0",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jest": "^23.11.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-standard": "^4.0.1",
     "parcel-bundler": "^1.12.4"
