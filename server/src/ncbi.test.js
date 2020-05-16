@@ -64,10 +64,14 @@ describe('assembleDateFilter', () => {
   })
 
   describe('when given an invalid date', () => {
-    const min = '2020/12/20' // dates must be actual js Dates
-    const max = '2040/12/20'
-    it('should throw an exception', () => {
-      expect(() => { assembleDateFilter('publication')({ min, max }) }).toThrow()
+    let min = '2020/12/20' // dates must be actual js Dates
+    it('should throw an exception for strings', () => {
+      expect(() => { assembleDateFilter('publication')({ min }) }).toThrow()
+    })
+
+    min = new Date('blah')
+    it('should throw an exception for malformed Date', () => {
+      expect(() => { assembleDateFilter('publication')({ min }) }).toThrow()
     })
   })
 })
