@@ -1,8 +1,11 @@
 env:
   es6: true
+  jest/globals: true
 extends:
   - eslint:recommended
   - standard
+plugins:
+  - jest
 parserOptions:
   ecmaFeatures:
     jsx: true

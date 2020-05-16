@@ -3,16 +3,25 @@
   "name": "server",
   "author": "David Rowthorn",
   "license": "ISC",
+  "jest": {
+    "moduleDirectories": ["node_modules", "src"]
+  },
   "scripts": {
-    "start": "node src/app.mjs"
+    "start": "node src/app.mjs",
+    "test": "jest src/*"
   },
   "dependencies": {
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.2",
     "eslint": "^7.0.0",
     "eslint-config-standard": "^14.1.1",
     "eslint-plugin-import": "^2.20.2",
+    "eslint-plugin-jest": "^23.11.0",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.1",
-    "express": "^4.17.1"
+    "jest": "^26.0.1"
   }
 }
