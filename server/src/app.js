@@ -15,14 +15,18 @@ app.get('/search', searchHandler)
 app.listen(port, () => console.log(`Example app listening at ${host}:${port}`))
 
 function searchHandler (req, res) {
-  res.json([
-    {
-      year: 1990,
-      count: 200
-    },
-    {
-      year: 1991,
-      count: 300
-    }
-  ])
+  res.json({
+    success: false,
+    errors: [],
+    data: [
+      {
+        year: 1990,
+        count: 200
+      },
+      {
+        year: 1991,
+        count: 300
+      }
+    ]
+  })
 }
