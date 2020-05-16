@@ -16,31 +16,36 @@ app.get('/search', searchHandler)
 
 app.listen(port, () => console.log(`Example app listening at ${host}:${port}`))
 
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
+
 const getCountForYearRange = async ({ disease, minYear, maxYear }) => {
   const getPubMedCount = ncbi.searchDb(fetch)(true)('pubmed')
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
 
-  let response = await getPubMedCount(ncbi.byTerm(disease))
-  let data = await response.json()
+  const response = await getPubMedCount(ncbi.byTerm(disease))
+  const data = await response.json()
   let remaining = parseInt(data.esearchresult.count) || 0
 
   const allYears = []
 
-  while (remaining > 0 && maxYear-- >= minYear) {
+  while (remaining > 0 && maxYear >= minYear) {
     const year = new Date(maxYear, 0)
     const byTermAndYear = ncbi.composeFilters([
       ncbi.byTerm(disease),
-      byPublicationDate(year, year)
+      byPublicationDate({ min: year, max: year })
     ])
 
-    response = await getPubMedCount(byTermAndYear)
-    data = await response.json()
+    const yearResponse = await getPubMedCount(byTermAndYear)
+    const yearData = await yearResponse.json()
 
-    const count = parseInt(data.esearchresult.count)
+    const count = parseInt(yearData.esearchresult.count)
     allYears.push({
       year: year.getFullYear(),
       count: count
     })
+
+    maxYear--
+    await sleep(120) // TODO: don't hardcode this
 
     remaining -= count
   }
@@ -52,7 +57,7 @@ function searchHandler (req, res) {
   // TODO: sanitise input
 
   // FIXME: this is test data
-  getCountForYearRange({ disease: 'cancer', minYear: 2000, maxYear: 2010 })
+  getCountForYearRange({ disease: 'cancer', minYear: 2006, maxYear: 2010 })
     .then(allYears => {
       Promise.all(allYears)
         .then(value => {

@@ -22,8 +22,8 @@ const formatDate = date => {
 
 // PUBLIC
 
-const searchDb = fetchFn => countOnly => dbName => async queryStr => {
-  let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?retmode=json&db=${dbName}&${queryStr}` // TODO: add api key
+const searchDb = fetchFn => countOnly => dbName => async filters => {
+  let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?&apikey=${process.env.NCBI_KEY}&retmode=json&db=${dbName}&${filters}` // TODO: add api key
   if (countOnly) {
     query += '&rettype=count'
   }
