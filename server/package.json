@@ -4,13 +4,17 @@
   "author": "David Rowthorn",
   "license": "ISC",
   "jest": {
-    "moduleDirectories": ["node_modules", "src"]
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+    ]
   },
   "scripts": {
     "start": "node src/app.js",
     "test": "jest src/*"
   },
   "dependencies": {
+    "cors": "^2.8.5",
     "express": "^4.17.1"
   },
   "devDependencies": {
