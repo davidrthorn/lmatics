@@ -27,6 +27,7 @@ const searchDb = fetchFn => countOnly => dbName => async filters => {
   if (countOnly) {
     query += '&rettype=count'
   }
+  console.log(query)
   return fetchFn(query)
 }
 
@@ -58,9 +59,25 @@ const byDateTypeAndRange = dateType => {
 
 const composeFilters = (filters = []) => filters.join('&').trimRight('&')
 
+// TODO: test
+function getResultCount (esearchResponse) {
+  const esearchResult = esearchResponse.esearchresult
+  if (!esearchResult) {
+    throw new Error('missing esearch result')
+  }
+
+  const count = esearchResult.count
+  if (!count) {
+    throw new Error('missing count')
+  }
+
+  return parseInt(count)
+}
+
 module.exports = {
   byDateTypeAndRange,
   byTerm,
   composeFilters,
+  getResultCount,
   searchDb
 }

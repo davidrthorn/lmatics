@@ -16,35 +16,35 @@ app.get('/search', searchHandler)
 
 app.listen(port, () => console.log(`Example app listening at ${host}:${port}`))
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-function getCount (esearchResponse) {
-  const esearchResult = esearchResponse.esearchResult
-  if (!esearchResult) {
-    throw new Error('missing esearch result')
-  }
-
-  const count = esearchResult.count
-  if (!count) {
-    throw new Error('missing count')
-  }
-
-  return parseInt(count)
+const fail = res => (code, msg) => {
+  console.log(msg)
+  res.status = code
+  res.json({
+    success: false,
+    errors: [
+      msg
+    ]
+  })
 }
 
-async function getCountForYearRange ({ disease, minYear, maxYear }) {
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // should be replaced with a proper rate limiting client
+
+// getCountForYearRange returns an array of promises that each resolve
+// to a formatted count for a year in the range (in reverse order),
+// or for as far back from the max year we can go before running out of papers
+async function getCountForYearRange ({ disease, from, to }) {
   const getPubMedCount = ncbi.searchDb(fetch)(true)('pubmed')
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
   const byTerm = ncbi.byTerm(disease)
 
   const response = await getPubMedCount(byTerm)
   const data = await response.json()
-  let remaining = getCount(data)
+  let remaining = ncbi.getResultCount(data)
 
   const allYears = []
 
-  while (remaining > 0 && maxYear >= minYear) {
-    const year = new Date(maxYear, 0)
+  while (remaining > 0 && to >= from) {
+    const year = new Date(to, 0)
     const byTermAndYear = ncbi.composeFilters([
       byTerm,
       byPublicationDate({ min: year, max: year })
@@ -53,58 +53,25 @@ async function getCountForYearRange ({ disease, minYear, maxYear }) {
     const yearResponse = await getPubMedCount(byTermAndYear)
     const yearData = await yearResponse.json()
 
-    const count = getCount(yearData)
+    const count = ncbi.getResultCount(yearData)
     allYears.push({
       year: year.getFullYear(),
       count: count
     })
 
-    await sleep(120) // TODO: don't hardcode this
+    await sleep(100) // TODO: don't hardcode this
 
-    maxYear--
+    to--
     remaining -= count
   }
   return allYears
-}
-
-function searchHandler (req, res) {
-  const fail = (code, msg) => {
-    res.status = code
-    res.json({
-      success: false,
-      errors: [
-        message
-      ]
-    })
-  }
-
-  const params = req.query
-  const [isValid, message] = validateSearchParams(params)
-
-  if (!isValid) {
-    fail(400, message)
-  }
-
-  getCountForYearRange(formatParams(params))
-    .then(allYears => {
-      Promise.all(allYears)
-        .then(yearsArray => {
-          res.json({
-            success: true,
-            errors: [],
-            data: yearsArray.reverse()
-          })
-        })
-        .catch(reason => { fail(500, reason) })
-    })
-    .catch(reason => { fail(500, reason) })
 }
 
 const isValidYear = year => /[1-9][0-9]{3}/.test(year)
 
 function validateSearchParams ({ disease, from, to }) {
   if (!disease || !from || !to) {
-    return [false, `'disease', 'from' and 'to' are required params. Got: ${arguments}`]
+    return [false, `'disease', 'from' and 'to' are required params. Got: ${disease}, ${from}, ${to}`]
   }
   if (!isValidYear(from) || !isValidYear(to)) {
     return [false, `'from' and 'to' are years formatted as 4-digit ints greater than 999. Got: '${from}', '${to}'`]
@@ -120,3 +87,28 @@ const formatParams = ({ disease, from, to }) => ({
   from: parseInt(from),
   to: parseInt(to)
 })
+
+function searchHandler (req, res) {
+  const failRes = fail(res)
+  const params = req.query
+  const [isValid, message] = validateSearchParams(params)
+
+  if (!isValid) {
+    failRes(400, message)
+    return
+  }
+
+  getCountForYearRange(formatParams(params))
+    .then(allYears => {
+      Promise.all(allYears)
+        .then(yearsArray => {
+          res.json({
+            success: true,
+            errors: [],
+            data: yearsArray.reverse()
+          })
+        })
+        .catch(reason => { failRes(500, reason.message) })
+    })
+    .catch(reason => { failRes(500, reason.message) })
+}
