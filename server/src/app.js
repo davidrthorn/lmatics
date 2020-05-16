@@ -49,7 +49,7 @@ const getCountForYearRange = async ({ disease, minYear, maxYear }) => {
 
     remaining -= count
   }
-  return allYears
+  return allYears.reverse()
 }
 
 function searchHandler (req, res) {
@@ -60,8 +60,12 @@ function searchHandler (req, res) {
   getCountForYearRange({ disease: 'cancer', minYear: 2006, maxYear: 2010 })
     .then(allYears => {
       Promise.all(allYears)
-        .then(value => {
-          res.json(value)
+        .then(yearsArray => {
+          res.json({
+            success: true,
+            errors: [],
+            data: yearsArray
+          })
         })
         .catch(reason => {
           console.log(reason) // TODO: something better
