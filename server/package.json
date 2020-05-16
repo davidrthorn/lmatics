@@ -3,6 +3,9 @@
   "name": "server",
   "author": "David Rowthorn",
   "license": "ISC",
+  "scripts": {
+    "start": "node src/app.mjs"
+  },
   "dependencies": {
     "eslint": "^7.0.0",
     "eslint-config-standard": "^14.1.1",
