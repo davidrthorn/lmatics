@@ -9,7 +9,7 @@ const Chart = ({ data }) => {
         <CartesianGrid />
         <XAxis dataKey='year' />
         <YAxis />
-        <Bar dataKey='count' fill='#A3CFAC' />
+        <Bar dataKey='count' fill='#6D829A' />
       </BarChart>
     </ResponsiveContainer>
   )

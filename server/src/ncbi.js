@@ -49,14 +49,10 @@ const byDateTypeAndRange = dateType => {
 
   // min, max must be of type Date
   return ({ min, max }) => {
-    let result = dateTypeStr
-    if (min) {
-      result += `&mindate=${formatDate(min)}`
+    if (!min || !max) {
+      throw new Error('esearch will return all records unless BOTH min AND max are set')
     }
-    if (max) {
-      result += `&maxdate=${formatDate(max)}`
-    }
-    return result
+    return `${dateTypeStr}&mindate=${formatDate(min)}&maxdate=${formatDate(max)}`
   }
 }
 

@@ -18,38 +18,53 @@ app.listen(port, () => console.log(`Example app listening at ${host}:${port}`))
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms))
 
-const getCountForYearRange = async ({ disease, minYear, maxYear }) => {
+function getCount (esearchResponse) {
+  const esearchResult = esearchResponse.esearchResult
+  if (!esearchResult) {
+    throw new Error('missing esearch result')
+  }
+
+  const count = esearchResult.count
+  if (!count) {
+    throw new Error('missing count')
+  }
+
+  return parseInt(count)
+}
+
+async function getCountForYearRange ({ disease, minYear, maxYear }) {
   const getPubMedCount = ncbi.searchDb(fetch)(true)('pubmed')
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
+  const byTerm = ncbi.byTerm(disease)
 
-  const response = await getPubMedCount(ncbi.byTerm(disease))
+  const response = await getPubMedCount(byTerm)
   const data = await response.json()
-  let remaining = parseInt(data.esearchresult.count) || 0
+  let remaining = getCount(data)
 
   const allYears = []
 
   while (remaining > 0 && maxYear >= minYear) {
     const year = new Date(maxYear, 0)
     const byTermAndYear = ncbi.composeFilters([
-      ncbi.byTerm(disease),
+      byTerm,
       byPublicationDate({ min: year, max: year })
     ])
 
     const yearResponse = await getPubMedCount(byTermAndYear)
     const yearData = await yearResponse.json()
 
-    const count = parseInt(yearData.esearchresult.count)
+    const count = getCount(yearData)
     allYears.push({
       year: year.getFullYear(),
       count: count
     })
 
-    maxYear--
     await sleep(120) // TODO: don't hardcode this
 
+    maxYear--
     remaining -= count
   }
-  return allYears.reverse()
+  return allYears
 }
 
 function searchHandler (req, res) {
@@ -64,7 +79,7 @@ function searchHandler (req, res) {
           res.json({
             success: true,
             errors: [],
-            data: yearsArray
+            data: yearsArray.reverse()
           })
         })
         .catch(reason => {
