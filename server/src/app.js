@@ -68,11 +68,24 @@ async function getCountForYearRange ({ disease, minYear, maxYear }) {
 }
 
 function searchHandler (req, res) {
-  // TODO: validate input
-  // TODO: sanitise input
+  const fail = (code, msg) => {
+    res.status = code
+    res.json({
+      success: false,
+      errors: [
+        message
+      ]
+    })
+  }
 
-  // FIXME: this is test data
-  getCountForYearRange({ disease: 'cancer', minYear: 2006, maxYear: 2010 })
+  const params = req.query
+  const [isValid, message] = validateSearchParams(params)
+
+  if (!isValid) {
+    fail(400, message)
+  }
+
+  getCountForYearRange(formatParams(params))
     .then(allYears => {
       Promise.all(allYears)
         .then(yearsArray => {
@@ -82,11 +95,28 @@ function searchHandler (req, res) {
             data: yearsArray.reverse()
           })
         })
-        .catch(reason => {
-          console.log(reason) // TODO: something better
-        })
+        .catch(reason => { fail(500, reason) })
     })
-    .catch(reason => {
-      console.log(reason)
-    })
+    .catch(reason => { fail(500, reason) })
 }
+
+const isValidYear = year => /[1-9][0-9]{3}/.test(year)
+
+function validateSearchParams ({ disease, from, to }) {
+  if (!disease || !from || !to) {
+    return [false, `'disease', 'from' and 'to' are required params. Got: ${arguments}`]
+  }
+  if (!isValidYear(from) || !isValidYear(to)) {
+    return [false, `'from' and 'to' are years formatted as 4-digit ints greater than 999. Got: '${from}', '${to}'`]
+  }
+  if (from > to) {
+    return [false, `'from' must be less than 'to'. Got: ${from}, ${to}`]
+  }
+  return [true, null]
+}
+
+const formatParams = ({ disease, from, to }) => ({
+  disease: disease.trim(),
+  from: parseInt(from),
+  to: parseInt(to)
+})
