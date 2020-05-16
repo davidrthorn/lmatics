@@ -22,12 +22,19 @@ const formatDate = date => {
 
 // PUBLIC
 
-const searchDb = fetchFn => dbName => async queryStr =>
-  fetchFn(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=${dbName}&${queryStr}`)
+const searchDb = fetchFn => countOnly => dbName => async queryStr => {
+  let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?retmode=json&db=${dbName}&${queryStr}` // TODO: add api key
+  if (countOnly) {
+    query += '&rettype=count'
+  }
+  return fetchFn(query)
+}
+
+const byTerm = term => `term=${term}`
 
 // assembleDateFilter returns a function that, given a date range, returns a query sub-string
 // which can be concatenated with an existing query string to filter by date
-const assembleDateFilter = dateType => {
+const byDateTypeAndRange = dateType => {
   const entrezDateType = {
     publication: 'pdat',
     Entrez: 'edat',
@@ -53,7 +60,11 @@ const assembleDateFilter = dateType => {
   }
 }
 
+const composeFilters = (filters = []) => filters.join('&').trimRight('&')
+
 module.exports = {
-  assembleDateFilter,
+  byDateTypeAndRange,
+  byTerm,
+  composeFilters,
   searchDb
 }
