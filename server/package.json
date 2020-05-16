@@ -7,7 +7,7 @@
     "moduleDirectories": ["node_modules", "src"]
   },
   "scripts": {
-    "start": "node src/app.mjs",
+    "start": "node src/app.js",
     "test": "jest src/*"
   },
   "dependencies": {
