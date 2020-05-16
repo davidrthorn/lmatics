@@ -29,10 +29,10 @@ const fail = res => (code, msg) => {
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // should be replaced with a proper rate limiting client
 
-// getCountForYearRange returns an array of promises that each resolve
-// to a formatted count for a year in the range (in reverse order),
-// or for as far back from the max year we can go before running out of papers
-async function getCountForYearRange ({ disease, from, to }) {
+// getPubmedCountForTermInYearRange returns an array of promises that each resolve
+// to a formatted count for a year. Array is in (in reverse order) and covers full
+// range, or as as far back from the max year we can go before running out of records.
+async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
   const getPubMedCount = ncbi.searchDb(fetch)(true)('pubmed')
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
   const byTerm = ncbi.byTerm(disease)
@@ -67,6 +67,8 @@ async function getCountForYearRange ({ disease, from, to }) {
   return allYears
 }
 
+// PREPROCESS
+
 const isValidYear = year => /[1-9][0-9]{3}/.test(year)
 
 function validateSearchParams ({ disease, from, to }) {
@@ -88,6 +90,8 @@ const formatParams = ({ disease, from, to }) => ({
   to: parseInt(to)
 })
 
+// HANDLE
+
 function searchHandler (req, res) {
   const failRes = fail(res)
   const params = req.query
@@ -98,15 +102,11 @@ function searchHandler (req, res) {
     return
   }
 
-  getCountForYearRange(formatParams(params))
+  getPubmedCountForTermInYearRange(formatParams(params))
     .then(allYears => {
       Promise.all(allYears)
         .then(yearsArray => {
-          res.json({
-            success: true,
-            errors: [],
-            data: yearsArray.reverse()
-          })
+          res.json({ data: yearsArray.reverse() })
         })
         .catch(reason => { failRes(500, reason.message) })
     })

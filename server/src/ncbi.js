@@ -1,17 +1,15 @@
 // PRIVATE
 
-const getType = thing => Object.prototype.toString.call(thing)
+const isValidDate = thing => Object.prototype.toString.call(thing) === '[object Date]' && !isNaN(thing)
 
-const isValidDate = d => getType(d) === '[object Date]' && !isNaN(d)
-
-// formatDate returns a date string for use in an NCBI query. It favours less specific
-// dates (e.g. year only) where possible.
-const formatDate = date => {
+// formatDate returns a date string for use in an NCBI query. It returns only year or year/month
+// if possible (e.g. 1990/01/01 is just 1990)
+function formatDate (date) {
   if (!isValidDate(date)) {
     throw new Error('date must be a valid Date type')
   }
 
-  const toStr = num => num.toString().padStart(2, '0')
+  const toStr = num => num.toString().padStart(2, '0') // NCBI probably don't require this, but docs state YYYY/MM/DD
 
   const [year, month, day] = [date.getFullYear(), date.getMonth(), date.getDate()]
   if (day === 1) {
@@ -22,6 +20,7 @@ const formatDate = date => {
 
 // PUBLIC
 
+// TODO: how does this handle failures? How do it's clients?
 const searchDb = fetchFn => countOnly => dbName => async filters => {
   let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?&apikey=${process.env.NCBI_KEY}&retmode=json&db=${dbName}&${filters}` // TODO: add api key
   if (countOnly) {
