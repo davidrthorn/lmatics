@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 
-const Input = ({ validate, placeholder = '' }) => {
+const Input = ({ validate, maxLength = '', placeholder = '' }) => {
   const [err, setErr] = useState('')
 
   const onChange = el => {
@@ -11,13 +11,14 @@ const Input = ({ validate, placeholder = '' }) => {
 
   return (
     <div>
-      <input type='text' placeholder={placeholder} maxLength='4' onChange={onChange} />
+      <input type='text' placeholder={placeholder} maxLength={maxLength} onChange={onChange} />
       {err !== '' && <div className='input-err'>{err}</div>}
     </div>
   )
 }
 
 Input.propTypes = {
+  maxLength: PropTypes.string,
   placeholder: PropTypes.string,
   validate: PropTypes.func
 }

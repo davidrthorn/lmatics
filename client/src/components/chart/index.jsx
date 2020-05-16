@@ -1,20 +1,11 @@
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 'recharts'
+import PropTypes from 'prop-types'
 import React from 'react'
 
-// TODO: replace
-const testData = [{
-  year: 2019,
-  count: 1000
-},
-{
-  year: 2018,
-  count: 300
-}]
-
-const Chart = () => {
+const Chart = ({ data }) => {
   return (
     <ResponsiveContainer height={600} width='100%'>
-      <BarChart data={testData}>
+      <BarChart data={data}>
         <CartesianGrid />
         <XAxis dataKey='year' />
         <YAxis />
@@ -22,6 +13,13 @@ const Chart = () => {
       </BarChart>
     </ResponsiveContainer>
   )
+}
+
+Chart.propTypes = {
+  data: PropTypes.arrayOf(PropTypes.shape({
+    year: PropTypes.number,
+    count: PropTypes.number
+  }))
 }
 
 export default Chart
