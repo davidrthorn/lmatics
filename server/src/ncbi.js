@@ -3,7 +3,8 @@ const getType = thing => Object.prototype.toString.call(thing)
 
 const isDate = date => getType(date) === '[object Date]'
 
-const searchDb = fetchFn => dbName => async queryStr => fetchFn(`db=${dbName}&${queryStr}`)
+const searchDb = fetchFn => dbName => async queryStr =>
+  fetchFn(`https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=${dbName}&${queryStr}`)
 
 // formatDate returns a date string for use in an NCBI query. It favours less specific
 // dates (e.g. year only) where possible.
@@ -12,12 +13,13 @@ const formatDate = date => {
     throw new Error(`expected type 'date', got type '${getType(date)}'`)
   }
 
-  const [year, month, day] = [date.getFullYear(), date.getMonth(), date.getDay()]
+  const toStr = num => num.toString().padStart(2, '0')
 
-  if (day === '01') {
-    return month === '01' ? year : `${year}/${month}`
+  const [year, month, day] = [date.getFullYear(), date.getMonth(), date.getDate()]
+  if (day === 1) {
+    return month === 0 ? year : `${year}/${toStr(month + 1)}`
   }
-  return `${year}/${month}/${day}`
+  return `${year}/${toStr(month + 1)}/${toStr(day)}`
 }
 
 // assembleDateFilter returns a function that, given a date range, returns a query sub-string
@@ -36,10 +38,10 @@ const assembleDateFilter = dateType => {
   return ({ min, max }) => {
     let result = dateTypeParam
     if (min !== undefined) {
-      result += '&mindate=' + formatDate(min)
+      result += `&mindate=${formatDate(min)}`
     }
-    if (min !== undefined) {
-      result += '&maxdate=' + formatDate(max)
+    if (max !== undefined) {
+      result += `&maxdate=${formatDate(max)}`
     }
     return result
   }
