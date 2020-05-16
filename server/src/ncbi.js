@@ -45,7 +45,7 @@ const assembleDateFilter = dateType => {
   }
 }
 
-exports = {
+module.exports = {
   assembleDateFilter,
   searchDb
 }
