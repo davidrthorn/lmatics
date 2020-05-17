@@ -4,17 +4,16 @@ const cors = require('cors')
 const express = require('express')
 
 const app = express()
-const port = 3000 // TODO: this could be set from ENV
+const port = 3000
 
 app.use(cors())
 
 app.get('/health', (req, res) => res.send('Healthy'))
 app.get('/search', searchHandler)
 
-app.listen(port, () => console.log(`Example app listening on port ${port}`))
+app.listen(port, () => console.log(`Listening on port ${port}`))
 
 const fail = res => (code, msg) => {
-  console.log(msg)
   res.status = code
   res.json({ error: msg })
 }
@@ -24,8 +23,7 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // TODO: sho
 // getPubmedCountForTermInYearRange returns an array of promises that each resolve
 // to a formatted count for a year. Array is in (in reverse order) and covers full
 // range, or as as far back from the max year we can go before running out of records.
-async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
-  const getPubmedCount = ncbi.searchDb(fetch)(process.env.NCBI_KEY)('pubmed')(true)
+const getCountForTermInYearRange = getCount => async ({ disease, from, to }) => {
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
   const byTerm = ncbi.byTerm(disease)
 
@@ -35,7 +33,7 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
     }
   }
 
-  const res = await getPubmedCount(byTerm)
+  const res = await getCount(byTerm)
   verify(res)
   const data = await res.json()
 
@@ -46,7 +44,7 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
   while (remaining > 0 && to >= from) {
     const year = new Date(to, 0)
 
-    const yearRes = await getPubmedCount(byTerm, byPublicationDate({ min: year, max: year }))
+    const yearRes = await getCount(byTerm, byPublicationDate({ min: year, max: year }))
     verify(yearRes)
     const yearData = await yearRes.json()
 
@@ -56,7 +54,7 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
       count: count
     })
 
-    await sleep(100) // TODO: this could be configurable
+    await sleep(100) // NCBI allows 10 requests per second, but this solution is brittle as hell
 
     to--
     remaining -= count
@@ -90,6 +88,8 @@ const formatParams = ({ disease, from, to }) => ({
 // HANDLE
 
 function searchHandler (req, res) {
+  console.log('Received search request')
+
   const failRes = fail(res)
   const params = req.query
   const [isValid, message] = validateSearchParams(params)
@@ -99,13 +99,21 @@ function searchHandler (req, res) {
     return
   }
 
-  getPubmedCountForTermInYearRange(formatParams(params))
+  const getPubmedCount = ncbi.searchDb(fetch)(process.env.NCBI_KEY)('pubmed')(true)
+
+  getCountForTermInYearRange(getPubmedCount)(formatParams(params))
     .then(allYears => {
       Promise.all(allYears)
         .then(yearsArray => {
           res.json({ data: yearsArray.reverse() })
         })
-        .catch(reason => { failRes(500, reason.message) })
+        .catch(reason => {
+          failRes(500, reason.message)
+          console.log('request failed: ' + reason.message)
+        })
     })
-    .catch(reason => { failRes(500, reason.message) })
+    .catch(reason => {
+      failRes(500, reason.message)
+      console.log('request failed: ' + reason.message)
+    })
 }

@@ -20,7 +20,7 @@ function formatDate (date) {
 
 // PUBLIC
 
-// TODO: too many parameters
+// TODO: too many parameters -- this should be split into smaller dependencies
 const searchDb = fetchFn => apiKey => dbName => countOnly => async (...filters) => {
   const f = composeFilters(...filters)
   let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?retmode=json&apikey=${apiKey}&db=${dbName}&${f}`

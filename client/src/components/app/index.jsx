@@ -11,6 +11,7 @@ const App = () => {
   const [isError, setIsError] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState(true)
   const [selection, setSelection] = useState({ from: 2014, to: 2020, disease: 'cancer' })
+  const [showing, setShowing] = useState(selection)
 
   function setSelectionProp (key, value) {
     const newSelection = { ...selection }
@@ -34,6 +35,7 @@ const App = () => {
       }
 
       setIsLoading(false)
+      setShowing(selection)
       setHasSubmitted(false)
     }
 
@@ -43,6 +45,9 @@ const App = () => {
   return (
     <div className='app'>
       <InputBar isLoading={isLoading} submit={setHasSubmitted} setSelection={setSelectionProp} />
+      <div className='chart-title'>
+        <h1>Total mentions for &lsquo;{showing.disease}&rsquo; between {showing.from} and {showing.to}</h1>
+      </div>
       <Chart isLoading={isLoading} isError={isError} className='chart' data={data} />
     </div>
   )
