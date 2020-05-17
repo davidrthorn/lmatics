@@ -11,7 +11,8 @@ const Input = ({
 
   const change = el => {
     if (!validate) {
-      return onChange(el.target.value)
+      onChange(el.target.value)
+      return
     }
 
     const [valid, message] = validate(el.target.value)
