@@ -2,8 +2,8 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 
 import PropTypes from 'prop-types'
 import React from 'react'
 
-// TODO: title somewhere, maybe not here
 const Chart = ({ data }) => {
+  // TODO: consider removing this inline styling
   return (
     <ResponsiveContainer height={600} width='100%'>
       <BarChart data={data}>

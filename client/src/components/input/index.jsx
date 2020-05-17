@@ -1,10 +1,14 @@
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 
-const Input = ({ validate, onChange, maxLength = '', placeholder = '' }) => {
+const Input = ({ onChange = null, validate = null, maxLength = '', placeholder = '' }) => {
   const [err, setErr] = useState('')
 
   const change = el => {
+    if (!validate) {
+      return onChange(el.target.value)
+    }
+
     const [valid, message] = validate(el.target.value)
     if (!valid) {
       setErr(message)

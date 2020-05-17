@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import Status from '~/components/status'
 
 const reqUrl = 'http://localhost:3000/search' // FIXME: make env
+const formatRequest = ({ from, to, disease }) => `${reqUrl}?from=${from}&to=${to}&disease=${disease}`
 
 const App = () => {
   const [data, setData] = useState([])
@@ -24,7 +25,7 @@ const App = () => {
       setIsLoading(true)
 
       try {
-        const result = await fetch(`${reqUrl}?from=${selection.from}&to=${selection.to}&disease=${selection.disease}`) // TODO: extract this url formatting function
+        const result = await fetch(formatRequest(selection))
         const body = await result.json()
         setData(body.data)
       } catch (err) {
@@ -38,6 +39,8 @@ const App = () => {
     fetchData()
   }, [hasSubmitted])
 
+  // TODO: remove the inline styling of this
+  // TODO: chart needs a title somewhere
   return (
     <div width='100vw' height='100vh'>
       <InputBar submit={setHasSubmitted} setSelection={setSelectionProp} />

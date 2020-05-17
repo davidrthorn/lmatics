@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import React from 'react'
 
 const validateYear = year => /[1-9][0-9]{3}/.test(year) ? [true, ''] : [false, 'Not a valid year']
-const validateDisease = disease => [true, ''] // TODO: do we want validation?
 
 const InputBar = ({ submit, setSelection }) => {
   const onFromChange = value => setSelection('from', parseInt(value))
@@ -27,7 +26,6 @@ const InputBar = ({ submit, setSelection }) => {
       <Input
         placeholder='Disease...'
         onChange={onDiseaseChange}
-        validate={validateDisease}
       />
       <button onClick={() => submit(true)}>Submit</button>
     </div>
@@ -35,8 +33,8 @@ const InputBar = ({ submit, setSelection }) => {
 }
 
 InputBar.propTypes = {
-  setSelection: PropTypes.func,
-  submit: PropTypes.func
+  setSelection: PropTypes.func.isRequired,
+  submit: PropTypes.func.isRequired
 }
 
 export default InputBar
