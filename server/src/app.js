@@ -4,17 +4,14 @@ const cors = require('cors')
 const express = require('express')
 
 const app = express()
-const port = 3000 // FIXME: load from environment
-const host = 'http://localhost' // FIXME: load from enviroment
+const port = 3000 // TODO: this could be set from ENV
 
-app.use(cors({
-  origin: 'http://localhost:1234' // FIXME: change this to read from ENV
-}))
+app.use(cors())
 
 app.get('/health', (req, res) => res.send('Healthy'))
 app.get('/search', searchHandler)
 
-app.listen(port, () => console.log(`Example app listening at ${host}:${port}`))
+app.listen(port, () => console.log(`Example app listening on port ${port}`))
 
 const fail = res => (code, msg) => {
   console.log(msg)
@@ -22,7 +19,7 @@ const fail = res => (code, msg) => {
   res.json({ error: msg })
 }
 
-const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // should be replaced with a proper rate limiting client
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // TODO: should be replaced with a client with proper rate limiting queue
 
 // getPubmedCountForTermInYearRange returns an array of promises that each resolve
 // to a formatted count for a year. Array is in (in reverse order) and covers full
@@ -59,7 +56,7 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
       count: count
     })
 
-    await sleep(100) // TODO: don't hardcode this
+    await sleep(100) // TODO: this could be configurable
 
     to--
     remaining -= count

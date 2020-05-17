@@ -2,15 +2,15 @@ import Chart from '~/components/chart'
 import InputBar from '~/components/input-bar'
 import React, { useEffect, useState } from 'react'
 
-const reqUrl = 'http://localhost:3000/search' // FIXME: make env
+const reqUrl = process.env.SERVER_HOST + '/search'
 const formatRequest = ({ from, to, disease }) => `${reqUrl}?from=${from}&to=${to}&disease=${disease}`
 
 const App = () => {
   const [data, setData] = useState([])
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
   const [isError, setIsError] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState(true)
-  const [selection, setSelection] = useState({ from: 2020, to: 2020, disease: 'cancer' })
+  const [selection, setSelection] = useState({ from: 2014, to: 2020, disease: 'cancer' })
 
   function setSelectionProp (key, value) {
     const newSelection = { ...selection }
@@ -40,8 +40,6 @@ const App = () => {
     fetchData()
   }, [hasSubmitted])
 
-  // TODO: remove the inline styling of this
-  // TODO: chart needs a title somewhere
   return (
     <div className='app'>
       <InputBar isLoading={isLoading} submit={setHasSubmitted} setSelection={setSelectionProp} />
