@@ -56,7 +56,7 @@ const byDateTypeAndRange = dateType => {
   }
 }
 
-const composeFilters = (...filters) => filters.join('&').trimRight('&')
+const composeFilters = (...filters) => filters.join('&')
 
 function getResultCount (esearchResponse) {
   const esearchResult = esearchResponse.esearchresult
