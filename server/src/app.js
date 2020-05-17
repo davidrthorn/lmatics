@@ -33,11 +33,11 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // should be
 // to a formatted count for a year. Array is in (in reverse order) and covers full
 // range, or as as far back from the max year we can go before running out of records.
 async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
-  const getPubMedCount = ncbi.searchDb(fetch)(true)('pubmed')
+  const getPubmedCount = ncbi.searchDb(fetch)(process.env.NCBI_KEY)('pubmed')(true)
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
   const byTerm = ncbi.byTerm(disease)
 
-  const response = await getPubMedCount(byTerm)
+  const response = await getPubmedCount(byTerm)
   const data = await response.json()
   let remaining = ncbi.getResultCount(data)
 
@@ -45,19 +45,12 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
 
   while (remaining > 0 && to >= from) {
     const year = new Date(to, 0)
-    const byTermAndYear = ncbi.composeFilters([
-      byTerm,
-      byPublicationDate({ min: year, max: year })
-    ])
 
-    const yearResponse = await getPubMedCount(byTermAndYear)
+    const yearResponse = await getPubmedCount(byTerm, byPublicationDate({ min: year, max: year }))
     const yearData = await yearResponse.json()
 
     const count = ncbi.getResultCount(yearData)
-    allYears.push({
-      year: year.getFullYear(),
-      count: count
-    })
+    allYears.push({ year: year, count: count })
 
     await sleep(100) // TODO: don't hardcode this
 

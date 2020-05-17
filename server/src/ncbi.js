@@ -20,13 +20,13 @@ function formatDate (date) {
 
 // PUBLIC
 
-// TODO: how does this handle failures? How do it's clients?
-const searchDb = fetchFn => countOnly => dbName => async filters => {
-  let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?&apikey=${process.env.NCBI_KEY}&retmode=json&db=${dbName}&${filters}` // TODO: add api key
+// TODO: too many parameters
+const searchDb = fetchFn => apiKey => dbName => countOnly => async (...filters) => {
+  const f = composeFilters(filters)
+  let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?retmode=json&apikey=${apiKey}&db=${dbName}&${f}`
   if (countOnly) {
     query += '&rettype=count'
   }
-  console.log(query)
   return fetchFn(query)
 }
 

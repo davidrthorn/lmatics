@@ -1,17 +1,16 @@
-const { searchDb, byDateTypeAndRange } = require('ncbi')
+const { searchDb, byDateTypeAndRange, composeFilters, byTerm, getResultCount } = require('./ncbi')
 
 describe('searchDb', () => {
-  describe('when input is valid', () => {
-    const db = 'someDb'
-    const query = 'key1=val1&key2=val2'
+  const baseUrl = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?retmode=json'
 
+  describe('when input is valid', () => {
     it('should call fetch function with the correct query string', () => {
       let calledWith = null
       const fetchFn = url => { calledWith = url }
 
-      searchDb(fetchFn)(db)(query)
+      searchDb(fetchFn)('someKey')('someDb')(true)('key1=val1', 'key2=val2')
       expect(calledWith).toBe(
-        'https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=someDb&key1=val1&key2=val2' // FIXME: no longer a pure function as it reads from the env; also missing params
+        baseUrl + '&apikey=someKey&db=someDb&key1=val1&key2=val2&rettype=count'
       )
     })
   })
@@ -54,8 +53,7 @@ describe('byDateTypeAndRange', () => {
   describe('when given only one date', () => {
     const min = new Date(2000, 0)
     it('should throw an exception', () => {
-      byDateTypeAndRange('publication')({ min })
-      expect(() => { byDateTypeAndRange('publication') }).toThrow()
+      expect(() => { byDateTypeAndRange('publication')({ min }) }).toThrow()
     })
   })
 
