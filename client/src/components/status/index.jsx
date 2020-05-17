@@ -20,3 +20,5 @@ Status.propTypes = {
   isError: PropTypes.bool,
   isLoading: PropTypes.bool
 }
+
+export default Status
