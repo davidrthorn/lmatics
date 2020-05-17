@@ -22,7 +22,7 @@ function formatDate (date) {
 
 // TODO: too many parameters
 const searchDb = fetchFn => apiKey => dbName => countOnly => async (...filters) => {
-  const f = composeFilters(filters)
+  const f = composeFilters(...filters)
   let query = `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?retmode=json&apikey=${apiKey}&db=${dbName}&${f}`
   if (countOnly) {
     query += '&rettype=count'
@@ -56,9 +56,8 @@ const byDateTypeAndRange = dateType => {
   }
 }
 
-const composeFilters = (filters = []) => filters.join('&').trimRight('&')
+const composeFilters = (...filters) => filters.join('&').trimRight('&')
 
-// TODO: test
 function getResultCount (esearchResponse) {
   const esearchResult = esearchResponse.esearchresult
   if (!esearchResult) {

@@ -71,3 +71,67 @@ describe('byDateTypeAndRange', () => {
     })
   })
 })
+
+describe('composeFilters', () => {
+  describe('when given one filter', () => {
+    const a = 'filter=a'
+    it('leaves it unchanged', () => {
+      expect(composeFilters(a)).toBe('filter=a')
+    })
+  })
+
+  describe('when given two filters', () => {
+    const [a, b] = ['filter=a', 'filter=b']
+    it('joins them correctly', () => {
+      expect(composeFilters(a, b)).toBe('filter=a&filter=b')
+    })
+  })
+})
+
+describe('byTerm', () => {
+  describe('when supplied with a standard string', () => {
+    it('returns the correct filter', () => {
+      expect(byTerm('cancer')).toBe('term=cancer')
+    })
+  })
+
+  describe('when supplied with a string with html characters', () => {
+    it('returns the correct filter', () => {
+      expect(byTerm('<script>')).toBe('term=%3Cscript%3E')
+    })
+  })
+})
+
+describe('getResultCount', () => {
+  describe('when supplied with a good response', () => {
+    const input = {
+      esearchresult: {
+        count: '10'
+      }
+    }
+
+    it('should return the right count', () => {
+      expect(getResultCount(input)).toBe(10)
+    })
+  })
+
+  describe('when supplied with response missing count', () => {
+    const input = {
+      esearchresult: {
+        nothing: '10'
+      }
+    }
+    it('should throw', () => {
+      expect(() => { getResultCount(input) }).toThrow()
+    })
+  })
+
+  describe('when supplied with response missing esearch', () => {
+    const input = {
+      something: 'else'
+    }
+    it('should throw', () => {
+      expect(() => { getResultCount(input) }).toThrow()
+    })
+  })
+})
