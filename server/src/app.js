@@ -50,7 +50,10 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
     const yearData = await yearResponse.json()
 
     const count = ncbi.getResultCount(yearData)
-    allYears.push({ year: year, count: count })
+    allYears.push({
+      year: year.getFullYear(),
+      count: count
+    })
 
     await sleep(100) // TODO: don't hardcode this
 

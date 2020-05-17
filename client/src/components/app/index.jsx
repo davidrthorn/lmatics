@@ -9,7 +9,7 @@ const App = () => {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
-  const [selection, setSelection] = useState({ from: 2000, to: 2020, disease: 'cancer' })
+  const [selection, setSelection] = useState({ from: 2012, to: 2020, disease: 'cancer' })
 
   function setSelectionProp (key, value) {
     const newSelection = { ...selection, key: value }
