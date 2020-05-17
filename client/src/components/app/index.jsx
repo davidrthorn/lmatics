@@ -1,7 +1,6 @@
 import Chart from '~/components/chart'
 import InputBar from '~/components/input-bar'
 import React, { useEffect, useState } from 'react'
-import Status from '~/components/status'
 
 const reqUrl = 'http://localhost:3000/search' // FIXME: make env
 const formatRequest = ({ from, to, disease }) => `${reqUrl}?from=${from}&to=${to}&disease=${disease}`
@@ -11,7 +10,7 @@ const App = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
   const [hasSubmitted, setHasSubmitted] = useState(false)
-  const [selection, setSelection] = useState({ from: 2018, to: 2020, disease: 'cancer' })
+  const [selection, setSelection] = useState({ from: 2020, to: 2020, disease: 'cancer' })
 
   function setSelectionProp (key, value) {
     const newSelection = { ...selection }
@@ -42,10 +41,9 @@ const App = () => {
   // TODO: remove the inline styling of this
   // TODO: chart needs a title somewhere
   return (
-    <div width='100vw' height='100vh'>
+    <div className='app'>
       <InputBar submit={setHasSubmitted} setSelection={setSelectionProp} />
-      <Status isLoading={isLoading} isError={isError} />
-      <Chart data={data} />
+      <Chart isLoading={isLoading} isError={isError} className='chart' data={data} />
     </div>
   )
 }

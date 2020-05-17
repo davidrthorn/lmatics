@@ -12,7 +12,11 @@ const InputBar = ({ submit, setSelection }) => {
   return (
     <div className='input-bar'>
       <Input
-        placeholder='From...'
+        placeholder='Disease...'
+        onChange={onDiseaseChange}
+      />
+      <Input
+        placeholder='From year...'
         maxLength='4'
         onChange={onFromChange}
         validate={validateYear}
@@ -23,11 +27,9 @@ const InputBar = ({ submit, setSelection }) => {
         onChange={onToChange}
         validate={validateYear}
       />
-      <Input
-        placeholder='Disease...'
-        onChange={onDiseaseChange}
-      />
-      <button onClick={() => submit(true)}>Submit</button>
+      <div>
+        <button onClick={() => submit(true)}>Plot</button>
+      </div>
     </div>
   )
 }
