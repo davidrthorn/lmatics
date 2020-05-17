@@ -1,7 +1,12 @@
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 
-const Input = ({ onChange = null, validate = null, maxLength = '', placeholder = '' }) => {
+const Input = ({
+  onChange = null,
+  validate = null,
+  maxLength = '',
+  placeholder = ''
+}) => {
   const [err, setErr] = useState('')
 
   const change = el => {

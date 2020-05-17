@@ -9,7 +9,7 @@ const App = () => {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
-  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [hasSubmitted, setHasSubmitted] = useState(true)
   const [selection, setSelection] = useState({ from: 2020, to: 2020, disease: 'cancer' })
 
   function setSelectionProp (key, value) {
@@ -20,6 +20,8 @@ const App = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!hasSubmitted) return
+
       setIsError(false)
       setIsLoading(true)
 
@@ -42,7 +44,7 @@ const App = () => {
   // TODO: chart needs a title somewhere
   return (
     <div className='app'>
-      <InputBar submit={setHasSubmitted} setSelection={setSelectionProp} />
+      <InputBar isLoading={isLoading} submit={setHasSubmitted} setSelection={setSelectionProp} />
       <Chart isLoading={isLoading} isError={isError} className='chart' data={data} />
     </div>
   )

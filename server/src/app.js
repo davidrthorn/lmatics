@@ -19,12 +19,7 @@ app.listen(port, () => console.log(`Example app listening at ${host}:${port}`))
 const fail = res => (code, msg) => {
   console.log(msg)
   res.status = code
-  res.json({
-    success: false,
-    errors: [
-      msg
-    ]
-  })
+  res.json({ error: msg })
 }
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // should be replaced with a proper rate limiting client
@@ -45,7 +40,6 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
 
   const res = await getPubmedCount(byTerm)
   verify(res)
-
   const data = await res.json()
 
   let remaining = ncbi.getResultCount(data)
@@ -57,7 +51,6 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
 
     const yearRes = await getPubmedCount(byTerm, byPublicationDate({ min: year, max: year }))
     verify(yearRes)
-
     const yearData = await yearRes.json()
 
     const count = ncbi.getResultCount(yearData)
