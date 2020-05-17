@@ -1,12 +1,13 @@
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 
-const Input = ({ validate, maxLength = '', placeholder = '' }) => {
+const Input = ({ validate, changeFn, maxLength = '', placeholder = '' }) => {
   const [err, setErr] = useState('')
 
   const onChange = el => {
     const [valid, message] = validate(el.target.value)
     setErr(!valid ? message : '')
+    changeFn(el.target.value)
   }
 
   return (
@@ -18,6 +19,7 @@ const Input = ({ validate, maxLength = '', placeholder = '' }) => {
 }
 
 Input.propTypes = {
+  changeFn: PropTypes.func,
   maxLength: PropTypes.string,
   placeholder: PropTypes.string,
   validate: PropTypes.func

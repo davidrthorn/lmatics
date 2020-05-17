@@ -2,6 +2,7 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, XAxis, YAxis } from 
 import PropTypes from 'prop-types'
 import React from 'react'
 
+// TODO: title somewhere, maybe not here
 const Chart = ({ data }) => {
   return (
     <ResponsiveContainer height={600} width='100%'>
