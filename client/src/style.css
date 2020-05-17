@@ -24,6 +24,12 @@ input, button {
   font-size: 1.1rem;
 }
 
+button {
+  background: none;
+  border: 1px solid grey;
+  padding: 2px 1.2rem;
+}
+
 .loader {
   color: #333333;
   font-size: 2rem;
