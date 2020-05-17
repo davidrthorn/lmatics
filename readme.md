@@ -16,3 +16,7 @@ To install locally, clone the repo and in both 'client' and 'server' folders,
 run `yarn` to install packages with yarn. The server tests can be run with `yarn test` from the main server directory; there are not yet tests for the frontend.
 
 Both server and client are started with `yarn start`.
+
+The server requires the environment variable `NCBI_KEY` to be set to a valid NCBI api key.
+
+The client requires `SERVER_HOST` to be set to the host and port of the backend (default `http://localhost:3000`).
