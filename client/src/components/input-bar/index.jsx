@@ -5,9 +5,9 @@ import React from 'react'
 const validateYear = year => /[1-9][0-9]{3}/.test(year) ? [true, ''] : [false, 'Not a valid year']
 const validateDisease = disease => [true, ''] // TODO: do we want validation?
 
-const InputBar = ({ setSelection }) => {
-  const onFromChange = value => setSelection('from', value)
-  const onToChange = value => setSelection('to', value)
+const InputBar = ({ submit, setSelection }) => {
+  const onFromChange = value => setSelection('from', parseInt(value))
+  const onToChange = value => setSelection('to', parseInt(value))
   const onDiseaseChange = value => setSelection('disease', value)
 
   return (
@@ -29,12 +29,14 @@ const InputBar = ({ setSelection }) => {
         onChange={onDiseaseChange}
         validate={validateDisease}
       />
+      <button onClick={() => submit(true)}>Submit</button>
     </div>
   )
 }
 
 InputBar.propTypes = {
-  setSelection: PropTypes.func
+  setSelection: PropTypes.func,
+  submit: PropTypes.func
 }
 
 export default InputBar

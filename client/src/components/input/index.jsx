@@ -1,26 +1,30 @@
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 
-const Input = ({ validate, changeFn, maxLength = '', placeholder = '' }) => {
+const Input = ({ validate, onChange, maxLength = '', placeholder = '' }) => {
   const [err, setErr] = useState('')
 
-  const onChange = el => {
+  const change = el => {
     const [valid, message] = validate(el.target.value)
-    setErr(!valid ? message : '')
-    changeFn(el.target.value)
+    if (!valid) {
+      setErr(message)
+      return
+    }
+    setErr(null)
+    onChange(el.target.value)
   }
 
   return (
     <div>
-      <input type='text' placeholder={placeholder} maxLength={maxLength} onChange={onChange} />
-      {err !== '' && <div className='input-err'>{err}</div>}
+      <input type='text' placeholder={placeholder} maxLength={maxLength} onChange={change} />
+      {err && <div className='input-err'>{err}</div>}
     </div>
   )
 }
 
 Input.propTypes = {
-  changeFn: PropTypes.func,
   maxLength: PropTypes.string,
+  onChange: PropTypes.func,
   placeholder: PropTypes.string,
   validate: PropTypes.func
 }

@@ -11,7 +11,7 @@ export const Status = ({ isLoading, isError }) => {
   // TODO: Spinner?
   return (
     <div className='status'>
-      {msg && <p>blah</p>}
+      {msg && <p>{msg}</p>}
     </div>
   )
 }

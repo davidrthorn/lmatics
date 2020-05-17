@@ -9,10 +9,12 @@ const App = () => {
   const [data, setData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [isError, setIsError] = useState(false)
-  const [selection, setSelection] = useState({ from: 2012, to: 2020, disease: 'cancer' })
+  const [hasSubmitted, setHasSubmitted] = useState(false)
+  const [selection, setSelection] = useState({ from: 2018, to: 2020, disease: 'cancer' })
 
   function setSelectionProp (key, value) {
-    const newSelection = { ...selection, key: value }
+    const newSelection = { ...selection }
+    newSelection[key] = value
     setSelection(newSelection)
   }
 
@@ -30,14 +32,15 @@ const App = () => {
       }
 
       setIsLoading(false)
+      setHasSubmitted(false)
     }
 
     fetchData()
-  }, [])
+  }, [hasSubmitted])
 
   return (
     <div width='100vw' height='100vh'>
-      <InputBar setSelection={setSelectionProp} />
+      <InputBar submit={setHasSubmitted} setSelection={setSelectionProp} />
       <Status isLoading={isLoading} isError={isError} />
       <Chart data={data} />
     </div>
