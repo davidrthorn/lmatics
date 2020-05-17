@@ -30,7 +30,7 @@ const searchDb = fetchFn => apiKey => dbName => countOnly => async (...filters) 
   return fetchFn(query)
 }
 
-const byTerm = term => `term=${encodeURI(term)}` // TODO: test that this is encoded
+const byTerm = term => `term=${encodeURI(term)}`
 
 // assembleDateFilter returns a function that, given a date range, returns a query sub-string
 // which can be concatenated with an existing query string to filter by date
