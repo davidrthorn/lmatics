@@ -11,7 +11,8 @@ describe('getCountForTermInYearRange', () => {
   describe('when given a range and a term', () => {
     it('should return an array of correct objects', async () => {
       let called = 0
-      const mockCount = _ => {
+      const mockCount = (...filters) => {
+        expect(filters[0]).toEqual(expect.stringContaining('cancer'))
         called++
         return resolveJsonWith(
           makeEsearchResponse(called === 1 ? 100 : called), // 100 for the first query, successive ints otherwise
