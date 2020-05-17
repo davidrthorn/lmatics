@@ -37,8 +37,17 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
   const byTerm = ncbi.byTerm(disease)
 
-  const response = await getPubmedCount(byTerm)
-  const data = await response.json()
+  const verify = res => {
+    if (res.status !== 200) {
+      throw new Error(`NCBI responded with status code ${res.status}`)
+    }
+  }
+
+  const res = await getPubmedCount(byTerm)
+  verify(res)
+
+  const data = await res.json()
+
   let remaining = ncbi.getResultCount(data)
 
   const allYears = []
@@ -46,8 +55,10 @@ async function getPubmedCountForTermInYearRange ({ disease, from, to }) {
   while (remaining > 0 && to >= from) {
     const year = new Date(to, 0)
 
-    const yearResponse = await getPubmedCount(byTerm, byPublicationDate({ min: year, max: year }))
-    const yearData = await yearResponse.json()
+    const yearRes = await getPubmedCount(byTerm, byPublicationDate({ min: year, max: year }))
+    verify(yearRes)
+
+    const yearData = await yearRes.json()
 
     const count = ncbi.getResultCount(yearData)
     allYears.push({
