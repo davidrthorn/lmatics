@@ -14,9 +14,9 @@ const sleep = ms => new Promise(resolve => setTimeout(resolve, ms)) // TODO: sho
 // range, or as as far back as we can go before running out of records
 const getCountForTermInYearRange = getCount => async ({ disease, from, to }) => {
   const byPublicationDate = ncbi.byDateTypeAndRange('publication')
-  const byTerm = ncbi.byTerm(disease)
+  const byDisease = ncbi.byTerm(disease)
 
-  const res = await getCount(byTerm)
+  const res = await getCount(byDisease)
   verify(res)
   const data = await res.json()
 
@@ -27,7 +27,7 @@ const getCountForTermInYearRange = getCount => async ({ disease, from, to }) => 
   while (remaining > 0 && to >= from) {
     const year = new Date(to, 0)
 
-    const yearRes = await getCount(byTerm, byPublicationDate({ min: year, max: year }))
+    const yearRes = await getCount(byDisease, byPublicationDate({ min: year, max: year }))
     verify(yearRes)
     const yearData = await yearRes.json()
 
